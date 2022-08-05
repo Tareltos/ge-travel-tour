@@ -31,5 +31,5 @@ pipeline {
 //                   notifyEveryUnstableBuild: true,
 //                   recipients              : [emailextrecipients([[$class: 'CulpritsRecipientProvider'], [$class: 'RequesterRecipientProvider']])].join(' ')])
 //         }
-    }
+//     }
 }
