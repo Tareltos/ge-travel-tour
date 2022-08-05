@@ -17,14 +17,19 @@ pipeline {
                  sh './gradlew test'
             }
         }
-        stage('Promotion') {
+        stage('Build Image') {
+            steps {
+                 sh './gradlew bootBuildImage'
+            }
+        }
+        stage('Deploy to Test Env') {
             steps {
                 timeout(time: 1, unit:'DAYS') {
-                    input 'Deploy to Production?'
+                    input 'Deploy to Test?'
                 }
             }
         }
-        stage('Deploy to Production') {
+        stage('Deploy to Test env') {
             steps {
                 echo 'Deploy to Production'
             }
