@@ -7,6 +7,11 @@ pipeline {
     }
 
     stages {
+        stage('Gradle Build') {
+              steps {
+                sh 'gradle clean build'
+              }
+        }
         stage('Unit & Integration Tests') {
             steps {
                 sh 'echo "Hello World"'
