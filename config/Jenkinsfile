@@ -1,38 +1,19 @@
-pipeline {
-    agent any
-
-    triggers {
-        cron('H */8 * * *') //regular builds
-        pollSCM('* * * * *') //polling for changes, here once a minute
+node{
+    stage('Git Checkout') {
+        git branch: 'main', credentialsId: 'vta-jenkins-token', url: 'https://github.com/Tareltos/ge-travel-tour.git'
+    }
+    stage('Gradle Run UTs') {
+        def gradleHome = tool name: 'gradle_7', type: 'gradle'
+        def gradleCli = "${gradleHome}/bin/gradle"
+        sh "${gradleCli} test"
+    }
+    stage('Gradle Build JAT') {
+        def gradleHome = tool name: 'gradle_7', type: 'gradle'
+        def gradleCli = "${gradleHome}/bin/gradle"
+        sh "${gradleCli} bootJar"
+    }
+    stage('Build Docker Image') {
+        sh 'docker build -t tareltos/tour-service:1.0.1-RELEASE .'
     }
 
-    stages {
-        stage('Gradle Build') {
-              steps {
-                sh './gradlew clean build'
-              }
-        }
-        stage('Unit & Integration Tests') {
-            steps {
-                 sh './gradlew test'
-            }
-        }
-        stage('Build Image') {
-            steps {
-                 sh './gradlew bootBuildImage'
-            }
-        }
-        stage('Deploy to Test Env') {
-            steps {
-                timeout(time: 1, unit:'DAYS') {
-                    input 'Deploy to Test?'
-                }
-            }
-        }
-        stage('Deploy to Test env') {
-            steps {
-                echo 'Deploy to Production'
-            }
-        }
-    }
 }
